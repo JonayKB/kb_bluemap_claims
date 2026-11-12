@@ -24,6 +24,8 @@ import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkConstants;
 import xaero.pac.common.claims.player.api.IPlayerChunkClaimAPI;
 import xaero.pac.common.claims.tracker.api.IClaimsManagerListenerAPI;
@@ -46,7 +48,11 @@ public class KbBlueMapClaims {
         t.setDaemon(true);
         return t;
     });
-    private final Consumer<BlueMapAPI> onBlueMapEnable = api -> requestRefresh();
+    private final PlayerPanel panel = new PlayerPanel();
+    private final Consumer<BlueMapAPI> onBlueMapEnable = api -> {
+        requestRefresh();
+        PlayerPanel.installWeb(api);
+    };
     private final Consumer<BlueMapAPI> onBlueMapDisable = api -> LOGGER.info("[KB BlueMap Claims] BlueMap desactivado");
 
     private MinecraftServer server;
@@ -73,6 +79,8 @@ public class KbBlueMapClaims {
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
                 () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (remote, isServer) -> true));
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(panel);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener((InterModEnqueueEvent e) -> panel.sendImc());
     }
 
     static KbBlueMapClaims get() {
@@ -82,6 +90,7 @@ public class KbBlueMapClaims {
     @SubscribeEvent
     public void onServerStarted(ServerStartedEvent event) {
         server = event.getServer();
+        panel.onServerStarted(server);
         if (!trackerRegistered) {
             OpenPACServerAPI.get(server).getServerClaimsManager().getTracker().register(new IClaimsManagerListenerAPI() {
                 @Override
@@ -110,6 +119,7 @@ public class KbBlueMapClaims {
     public void onServerStopping(ServerStoppingEvent event) {
         BlueMapAPI.unregisterListener(onBlueMapEnable);
         BlueMapAPI.unregisterListener(onBlueMapDisable);
+        panel.onServerStopping();
         server = null;
     }
 

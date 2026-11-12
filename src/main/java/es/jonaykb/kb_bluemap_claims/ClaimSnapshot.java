@@ -116,7 +116,7 @@ record ClaimSnapshot(List<Group> groups) {
     }
 
     @Nullable
-    private static Party partyOf(OpenPACServerAPI api, UUID playerId) {
+    static Party partyOf(OpenPACServerAPI api, UUID playerId) {
         IServerPartyAPI party = api.getPartyManager().getPartyByMember(playerId);
         if (party == null) return null;
 
