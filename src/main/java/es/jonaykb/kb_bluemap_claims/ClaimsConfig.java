@@ -28,6 +28,11 @@ public final class ClaimsConfig {
     public static final ForgeConfigSpec.ConfigValue<String> DISCORD_LINKS_FILE;
     public static final ForgeConfigSpec.BooleanValue DISCORD_AVATARS;
 
+    public static final ForgeConfigSpec.BooleanValue PANEL_ENABLED;
+    public static final ForgeConfigSpec.ConfigValue<String> AUTH_URL;
+    public static final ForgeConfigSpec.IntValue POLL_SECONDS;
+    public static final ForgeConfigSpec.BooleanValue DEATH_MARKER;
+
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
 
@@ -88,6 +93,23 @@ public final class ClaimsConfig {
         DISCORD_AVATARS = b
                 .comment("Mostrar la foto de perfil de Discord del dueño (se carga desde cdn.discordapp.com).")
                 .define("avatars", true);
+        b.pop();
+
+        b.comment("Panel del jugador en la web de BlueMap: iniciar sesión con Discord, tu vida y la de tu party,",
+                "centrar y seguir a tu personaje y tu última muerte. Necesita KB Discord Auth con [web] activado.").push("web");
+        PANEL_ENABLED = b
+                .comment("Añadir el panel a la web de BlueMap.")
+                .define("playerPanel", true);
+        AUTH_URL = b
+                .comment("URL pública del servidor HTTP de KB Discord Auth, tal como la ve el navegador,",
+                        "p. ej. \"https://auth.example.com\". Vacío = sin panel.")
+                .define("authUrl", "");
+        POLL_SECONDS = b
+                .comment("Cada cuántos segundos pide la web la vida y la posición.")
+                .defineInRange("pollSeconds", 2, 1, 30);
+        DEATH_MARKER = b
+                .comment("Marcar en el mapa tu última muerte (solo la ves tú).")
+                .define("deathMarker", true);
         b.pop();
 
         SPEC = b.build();

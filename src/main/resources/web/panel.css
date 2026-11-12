@@ -1,0 +1,472 @@
+/* KB BlueMap Claims · player panel. Uses BlueMap's theme variables so it follows dark / light / contrast. */
+
+#kb-map-panel {
+    --kbp-red: #e0281f;
+    --kbp-gold: #f2b01e;
+    --kbp-green: #4caf50;
+    --kbp-radius: 0.35em;
+    position: fixed;
+    /* Under BlueMap's control bar, which takes the whole top row */
+    top: 3rem;
+    right: 0.5rem;
+    z-index: 100;
+    width: 18em;
+    max-width: calc(100vw - 1rem);
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    box-sizing: border-box;
+    color: var(--theme-fg);
+    background: var(--theme-bg);
+    border-radius: var(--kbp-radius);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
+    font-size: 0.9rem;
+    line-height: 1.3;
+    user-select: none;
+}
+
+#kb-map-panel:has(> .kbp-login:only-child),
+#kb-map-panel.kbp-collapsed {
+    width: auto;
+}
+
+.kbp button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.kbp button:disabled {
+    cursor: default;
+    opacity: 0.45;
+}
+
+.kbp button:focus-visible,
+.kbp select:focus-visible {
+    outline: 2px solid var(--theme-switch-button-on);
+    outline-offset: -2px;
+}
+
+.kbp-icon {
+    display: inline-flex;
+    width: 1.15em;
+    height: 1.15em;
+    flex: none;
+}
+
+.kbp-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* ── logged out ── */
+.kbp-login {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5em;
+    width: 100%;
+    padding: 0.55em 0.9em !important;
+    border-radius: var(--kbp-radius);
+    background: #5865f2 !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    white-space: nowrap;
+}
+
+.kbp-login:hover {
+    background: #4752c4 !important;
+}
+
+/* ── header ── */
+.kbp-header {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid var(--theme-bg-light);
+}
+
+.kbp-collapsed .kbp-header {
+    border-bottom: none;
+}
+
+.kbp-toggle {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5em;
+    flex: 1;
+    min-width: 0;
+    padding: 0.45em 0.6em !important;
+    text-align: left;
+}
+
+.kbp-toggle:hover,
+.kbp-icon-btn:hover:not(:disabled),
+.kbp-member-main:hover:not(:disabled) {
+    background: var(--theme-bg-hover) !important;
+}
+
+.kbp-avatar {
+    width: 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    flex: none;
+}
+
+.kbp-title {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.kbp-mini-hp {
+    color: var(--kbp-red);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.kbp-chevron {
+    margin-left: auto;
+    display: inline-flex;
+    color: var(--theme-fg-light);
+    transition: transform 0.15s;
+}
+
+.kbp-collapsed .kbp-chevron {
+    transform: rotate(-90deg);
+}
+
+.kbp-icon-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 2.3em;
+    flex: none;
+    color: var(--theme-fg-light) !important;
+}
+
+.kbp-icon-btn.kbp-active,
+.kbp-icon-btn.kbp-active:hover:not(:disabled) {
+    color: var(--theme-fg) !important;
+    background: var(--theme-switch-button-on) !important;
+}
+
+.kbp-logout {
+    border-left: 1px solid var(--theme-bg-light) !important;
+}
+
+/* ── body ── */
+.kbp-body {
+    padding: 0.6em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+
+.kbp-account {
+    width: 100%;
+    font: inherit;
+    color: var(--theme-fg);
+    background: var(--theme-bg-hover);
+    border: 1px solid var(--theme-bg-light);
+    border-radius: var(--kbp-radius);
+    padding: 0.3em 0.4em;
+}
+
+.kbp-me-top {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+}
+
+.kbp-head {
+    width: 2em;
+    height: 2em;
+    flex: none;
+    image-rendering: pixelated;
+    border-radius: 0.15em;
+}
+
+.kbp-me .kbp-head {
+    width: 2.4em;
+    height: 2.4em;
+}
+
+.kbp-member-info {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+}
+
+.kbp-name {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-weight: 600;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.kbp-badge {
+    font-size: 0.72em;
+    font-weight: 600;
+    padding: 0.05em 0.45em;
+    border-radius: 1em;
+    color: #1d1d1d;
+    background: var(--kbp-gold);
+}
+
+.kbp-sub {
+    font-size: 0.82em;
+    color: var(--theme-fg-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kbp-coords {
+    font-variant-numeric: tabular-nums;
+}
+
+.kbp-dim::before {
+    content: "";
+    display: inline-block;
+    width: 0.55em;
+    height: 0.55em;
+    margin-right: 0.3em;
+    border-radius: 50%;
+    background: var(--kbp-green);
+    vertical-align: 0.05em;
+}
+
+.kbp-dim-minecraft_the_nether::before { background: #c0392b; }
+.kbp-dim-minecraft_the_end::before { background: #a77bdb; }
+
+.kbp-offline::before {
+    content: "";
+    display: inline-block;
+    width: 0.55em;
+    height: 0.55em;
+    margin-right: 0.3em;
+    border-radius: 50%;
+    border: 1px solid var(--theme-fg-light);
+    box-sizing: border-box;
+    vertical-align: 0.05em;
+}
+
+.kbp-dead {
+    color: var(--kbp-red);
+    font-weight: 600;
+}
+
+/* ── hearts ── */
+.kbp-health {
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+}
+
+.kbp-hearts {
+    display: flex;
+    gap: 1px;
+}
+
+.kbp-heart {
+    width: 0.82em;
+    height: 0.72em;
+    background-size: 100% 100%;
+    image-rendering: pixelated;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Cpath fill='%23808080' fill-opacity='.5' d='M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z'/%3E%3C/svg%3E");
+}
+
+.kbp-heart.full {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Cpath fill='%23e0281f' d='M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z'/%3E%3Cpath fill='%23ff9a8f' d='M1 1h1v1H1z'/%3E%3C/svg%3E");
+}
+
+.kbp-heart.half {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Cpath fill='%23808080' fill-opacity='.5' d='M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z'/%3E%3Cpath fill='%23e0281f' d='M1 0h2v1h.5v5H3V5H2V4H1V3H0V1h1z'/%3E%3Cpath fill='%23ff9a8f' d='M1 1h1v1H1z'/%3E%3C/svg%3E");
+}
+
+.kbp-hp {
+    font-size: 0.82em;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.kbp-abs {
+    color: var(--kbp-gold);
+}
+
+.kbp-low .kbp-hp {
+    color: var(--kbp-red);
+}
+
+.kbp-low .kbp-hearts {
+    animation: kbp-pulse 1s ease-in-out infinite;
+}
+
+@keyframes kbp-pulse {
+    50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kbp-low .kbp-hearts { animation: none; }
+}
+
+/* ── actions ── */
+.kbp-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 0.35em;
+    margin-top: 0.55em;
+}
+
+.kbp-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3em;
+    padding: 0.4em 0.3em !important;
+    border-radius: var(--kbp-radius);
+    background: var(--theme-bg-hover) !important;
+    white-space: nowrap;
+    font-size: 0.88em !important;
+}
+
+.kbp-btn:hover:not(:disabled) {
+    background: var(--theme-bg-light) !important;
+}
+
+.kbp-btn.kbp-active,
+.kbp-btn.kbp-active:hover:not(:disabled) {
+    background: var(--theme-switch-button-on) !important;
+    color: #fff !important;
+}
+
+/* ── party ── */
+.kbp-party {
+    border-top: 1px solid var(--theme-bg-light);
+    padding-top: 0.5em;
+}
+
+.kbp-section-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5em;
+    font-weight: 600;
+    margin-bottom: 0.3em;
+}
+
+.kbp-section-title > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kbp-count {
+    font-size: 0.8em;
+    font-weight: normal;
+    color: var(--theme-fg-light);
+    white-space: nowrap;
+}
+
+.kbp-members {
+    list-style: none;
+    margin: 0 -0.6em;
+    padding: 0;
+}
+
+.kbp-member {
+    display: flex;
+    align-items: stretch;
+}
+
+.kbp-member-main {
+    display: flex !important;
+    align-items: center;
+    gap: 0.55em;
+    flex: 1;
+    min-width: 0;
+    padding: 0.35em 0.6em !important;
+    text-align: left;
+}
+
+.kbp-member .kbp-icon-btn {
+    margin-right: 0.3em;
+    border-radius: var(--kbp-radius);
+    align-self: center;
+    height: 2em;
+}
+
+.kbp-is-offline .kbp-head {
+    filter: grayscale(1);
+    opacity: 0.5;
+}
+
+/* The row says why it can't be centred (offline, hidden location): don't fade it as well */
+.kbp .kbp-member-main:disabled {
+    opacity: 1;
+}
+
+.kbp-is-offline .kbp-name {
+    color: var(--theme-fg-light);
+}
+
+.kbp-empty {
+    font-size: 0.85em;
+    color: var(--theme-fg-light);
+}
+
+.kbp-error {
+    font-size: 0.85em;
+    color: var(--kbp-red);
+    padding: 0.4em 0.6em;
+}
+
+/* ── toast ── */
+.kbp-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5em;
+    transform: translate(-50%, 1em);
+    z-index: 101;
+    padding: 0.5em 1em;
+    border-radius: var(--kbp-radius);
+    color: var(--theme-fg);
+    background: var(--theme-bg);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.kbp-toast.kbp-show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* ── death marker label ── */
+.kbp-death-label {
+    white-space: nowrap;
+    text-align: center;
+}
+
+/* Phones: BlueMap's control bar takes the whole top row */
+@media (max-width: 575px) {
+    #kb-map-panel {
+        top: auto;
+        bottom: 0.5em;
+        left: 0.5em;
+        right: auto;
+        width: calc(100vw - 4.5em);
+        max-height: 55vh;
+    }
+}
