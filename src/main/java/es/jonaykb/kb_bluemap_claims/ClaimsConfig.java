@@ -33,6 +33,9 @@ public final class ClaimsConfig {
     public static final ForgeConfigSpec.IntValue POLL_SECONDS;
     public static final ForgeConfigSpec.BooleanValue DEATH_MARKER;
 
+    public static final ForgeConfigSpec.BooleanValue SKINS_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue SKINS_PREMIUM_BY_NAME;
+
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
 
@@ -110,6 +113,16 @@ public final class ClaimsConfig {
         DEATH_MARKER = b
                 .comment("Marcar en el mapa tu última muerte (solo la ves tú).")
                 .define("deathMarker", true);
+        b.pop();
+
+        b.comment("Cabezas de los jugadores en BlueMap para servidores offline (BlueMap solo sabe pedirlas a Mojang por UUID)").push("skins");
+        SKINS_ENABLED = b
+                .comment("Usar la skin que tiene el jugador en el servidor (la de SkinRestorer o la de su cuenta premium)",
+                        "y actualizar la cabeza en el mapa en cuanto la cambia.")
+                .define("enabled", true);
+        SKINS_PREMIUM_BY_NAME = b
+                .comment("Si el jugador no tiene skin en el servidor, usar la de la cuenta premium con su mismo nombre.")
+                .define("premiumByName", true);
         b.pop();
 
         SPEC = b.build();

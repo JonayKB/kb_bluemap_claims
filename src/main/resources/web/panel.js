@@ -336,14 +336,41 @@
         return path.charAt(0).toUpperCase() + path.substring(1);
     }
 
-    function headUrl(uuid) {
+    /** version: changes with the skin (BlueMap serves heads with a one-day cache). */
+    function headUrl(uuid, version) {
         const map = app.mapViewer.map;
-        return map ? map.data.dataUrl + "assets/playerheads/" + uuid + ".png" : "assets/steve.png";
+        if (!map) return "assets/steve.png";
+        return map.data.dataUrl + "assets/playerheads/" + uuid + ".png" + (version ? "?v=" + encodeURIComponent(version) : "");
     }
 
-    function head(uuid) {
-        return h("img", {class: "kbp-head", src: headUrl(uuid), alt: "", onerror: e => { e.target.onerror = null; e.target.src = "assets/steve.png"; }});
+    // One <img> per head, reused on every redraw: recreating it every few seconds made it flicker and, for players
+    // without a head yet (404), re-requested it each time. A missing head shows Steve and is retried after a minute.
+    const HEAD_RETRY_MS = 60000;
+    const heads = new Map(); // url → {img, failedAt}
+    function head(s) {
+        const url = headUrl(s.uuid, s.head);
+        let entry = heads.get(url);
+        if (entry && entry.failedAt && Date.now() - entry.failedAt > HEAD_RETRY_MS) {
+            entry.failedAt = 0;
+            entry.img.src = url + (url.includes("?") ? "&" : "?") + "r=" + Date.now();
+        }
+        if (!entry) {
+            const img = h("img", {class: "kbp-head", alt: ""});
+            entry = {img, failedAt: 0};
+            img.addEventListener("error", () => {
+                if (img.src.endsWith("assets/steve.png")) return;
+                entry.failedAt = Date.now();
+                img.src = "assets/steve.png";
+            });
+            img.src = url;
+            heads.set(url, entry);
+        }
+        // A node can only be in one place: if the same head is already used in this redraw, use a copy
+        if (rendering.has(entry.img)) return entry.img.cloneNode();
+        rendering.add(entry.img);
+        return entry.img;
     }
+    let rendering = new Set(); // heads used in the current redraw
 
     /** Ten hearts like in the game, whatever the max health, plus the numbers. */
     function hearts(s) {
@@ -381,7 +408,7 @@
         return h("li", {class: "kbp-member" + (s.online ? "" : " kbp-is-offline")},
             h("button", {class: "kbp-member-main", "data-k": "m-" + s.uuid, disabled: !locatable, title: locatable ? "Centrar en " + s.name : null,
                     onclick: () => centerOn(s)},
-                head(s.uuid),
+                head(s),
                 h("div", {class: "kbp-member-info"},
                     h("div", {class: "kbp-name"}, s.name, s.owner ? h("span", {class: "kbp-badge", title: "Líder de la party"}, "Líder") : null),
                     s.online && !s.dead && !s.spectator ? hearts(s) : statusLine(s),
@@ -403,6 +430,7 @@
     }
 
     function draw() {
+        rendering = new Set();
         root.replaceChildren();
         root.classList.toggle("kbp-collapsed", collapsed);
 
@@ -455,7 +483,7 @@
         const following = me && follow && follow.uuid === me.uuid;
         body.appendChild(h("section", {class: "kbp-me"},
             h("div", {class: "kbp-me-top"},
-                head(me.uuid),
+                head(me),
                 h("div", {class: "kbp-member-info"},
                     me.online && !me.dead && !me.spectator ? hearts(me) : null,
                     statusLine(me))),
