@@ -7,6 +7,7 @@ Mod **solo de servidor** que dibuja en [BlueMap](https://bluemap.bluecolored.de/
 - **Popup al pinchar:** nombre del claim, dueño, su party con los miembros y el líder, y los chunks.
 - **Con KB Discord Auth:** el `@` de Discord del dueño y de los miembros, y la foto de perfil del dueño. Solo lee `config/kb_discord_auth/links.json`; si el mod no está, simplemente no sale. De ese archivo solo se usan el id, el nombre y el avatar de Discord, nunca los tokens.
 - **Panel del jugador en la web (con KB Discord Auth).** Botón «Iniciar sesión» con Discord en la web de BlueMap. Con la sesión iniciada ves tu vida (corazones, absorción), dónde estás, y la vida y la dimensión de los de tu party de OPaC. Puedes **centrar** el mapa en ti o en un compañero, **seguir** a cualquiera (aunque cambie de dimensión) e **ir a tu última muerte**, que sale marcada en el mapa solo para ti. Sin iniciar sesión, la web es igual que siempre.
+- **Cabezas con la skin de verdad en servidores offline.** BlueMap solo sabe pedir la skin a Mojang por UUID, y en modo offline nadie tiene cabeza. Este mod le da la skin que el jugador tiene en el servidor: la puesta con [SkinRestorer](https://modrinth.com/mod/skinrestorer) (también con `/skin set`) o, si no tiene, la de la cuenta premium con su nombre. Al cambiar de skin, la cabeza del mapa se actualiza en unos segundos, sin reconectar.
 - **No da lag:** en el hilo del servidor solo se copia la lista de claims; las formas y el HTML se calculan en otro hilo.
 - Los nombres que escriben los jugadores (claims, parties, Discord) se escapan, así que nadie puede meter HTML o scripts en la web del mapa.
 
@@ -20,6 +21,7 @@ Los clientes no necesitan el mod.
 | Open Parties and Claims | probado con 0.33.0 |
 | BlueMap | 5.x (API 2.7). **5.3 si el servidor usa Java 17**; 5.12 necesita **Java 21** |
 | KB Discord Auth | opcional; 1.6+ con `[web] enabled = true` para el panel del jugador |
+| SkinRestorer | opcional; probado con 2.11.1 (Forge) |
 
 ## Compilar
 
@@ -70,6 +72,29 @@ authUrl = "https://auth.example.com"   # URL pública de KB Discord Auth, como l
 pollSeconds = 2                        # cada cuánto se actualizan la vida y las posiciones
 deathMarker = true                     # marcar tu última muerte (solo la ves tú)
 ```
+
+Y para las cabezas:
+
+```toml
+[skins]
+enabled = true        # usar la skin del servidor (SkinRestorer, premium) para las cabezas de BlueMap
+premiumByName = true  # si no tiene, la de la cuenta premium con su mismo nombre
+```
+
+## Cabezas y skins
+
+- Se lee la skin que tiene el jugador en el servidor (propiedad `textures` de su perfil), que es donde la pone SkinRestorer. Funciona con su `/skin set` y con su búsqueda automática de premium.
+- Si no tiene, se busca la cuenta premium con su nombre (como mucho una vez por hora y jugador, y 15 s después de entrar para no coincidir con SkinRestorer y que Mojang no limite a los dos).
+- Solo se descargan skins de `textures.minecraft.net`. Las skins antiguas de 64x32 se tratan como en el juego (si no, la de Notch saldría con un cuadrado negro).
+- BlueMap sirve las cabezas con caché de un día. El panel del jugador ya pide la nueva al cambiar de skin; para los marcadores de BlueMap, quítale la caché en nginx:
+
+  ```nginx
+  location ~ ^/maps/[^/]+/assets/playerheads/ {
+      proxy_pass http://127.0.0.1:8100;   # el mismo que el resto de BlueMap
+      proxy_hide_header Cache-Control;
+      add_header Cache-Control "no-cache" always;
+  }
+  ```
 
 ## Panel del jugador
 
