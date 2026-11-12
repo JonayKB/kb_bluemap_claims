@@ -63,6 +63,11 @@ final class PlayerPanel {
     /** Server thread only. */
     private Map<String, Death> deaths;
     private volatile MinecraftServer server;
+    private final PlayerHeads heads;
+
+    PlayerPanel(PlayerHeads heads) {
+        this.heads = heads;
+    }
 
     // ───────────────────────────── setup ─────────────────────────────
 
@@ -197,13 +202,15 @@ final class PlayerPanel {
         }
     }
 
-    private static JsonObject status(MinecraftServer s, @Nullable BlueMapAPI blueMap, UUID id, @Nullable String knownName,
+    private JsonObject status(MinecraftServer s, @Nullable BlueMapAPI blueMap, UUID id, @Nullable String knownName,
                                      boolean withPlace) {
         JsonObject o = new JsonObject();
         ServerPlayer p = s.getPlayerList().getPlayer(id);
         o.addProperty("uuid", id.toString());
         o.addProperty("name", nameOf(s, id, knownName));
         o.addProperty("online", p != null);
+        String head = heads.version(id);
+        if (head != null) o.addProperty("head", head);
         if (p == null) return o;
         o.addProperty("health", round(p.getHealth()));
         o.addProperty("maxHealth", round(p.getMaxHealth()));

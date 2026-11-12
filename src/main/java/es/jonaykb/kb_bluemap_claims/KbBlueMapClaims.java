@@ -48,10 +48,12 @@ public class KbBlueMapClaims {
         t.setDaemon(true);
         return t;
     });
-    private final PlayerPanel panel = new PlayerPanel();
+    private final PlayerHeads heads = new PlayerHeads();
+    private final PlayerPanel panel = new PlayerPanel(heads);
     private final Consumer<BlueMapAPI> onBlueMapEnable = api -> {
         requestRefresh();
         PlayerPanel.installWeb(api);
+        heads.install(api);
     };
     private final Consumer<BlueMapAPI> onBlueMapDisable = api -> LOGGER.info("[KB BlueMap Claims] BlueMap desactivado");
 
@@ -120,6 +122,7 @@ public class KbBlueMapClaims {
         BlueMapAPI.unregisterListener(onBlueMapEnable);
         BlueMapAPI.unregisterListener(onBlueMapDisable);
         panel.onServerStopping();
+        heads.stop();
         server = null;
     }
 
@@ -131,6 +134,7 @@ public class KbBlueMapClaims {
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || server == null) return;
+        heads.tick(server);
         if (++tickCounter < 20) return; // once a second is plenty
         tickCounter = 0;
         if (running) return;
